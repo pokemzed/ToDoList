@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
+    <title>ToDo</title>
+</head>
+<body>
+
+    <div class="grid__wrap">
+        <div class="title-todo__wrap">
+            <div class="title__wrap">
+                <h1>Список ваших дел</h1>
+                <p>Добавляйте дела, редактируйте, отмечайте выполненными</p>
+            </div>
+        </div>
+        <div class="work-todo__wrap">
+            <ul class="works__wrap" id="spisok">
+                <li class="work-start__wrap">
+                    <div class="title-work__wrap">
+                        <h1>Список дел пуст :(</h1>
+                        <p>Добавьте новые</p>
+                    </div>
+                    <img src="./image/clear_work.svg" alt="img">
+                </li>
+                <!-- <li class="work__wrap">
+                    <div class="name-work__wrap">
+                        <input type="checkbox" id="checkWork" data-action="checked">
+                        <div class="importance-work"></div>
+                        <h2>Добавляйте дела, редактируйте, отмечайте  выполненными</h2>
+                    </div>
+                    <div class="delete-work__wrap">
+                        <button id="deleteWork" data-action="delete">
+                            <span data-action="delete">Удалить</span>
+                        </button>
+                    </div>
+                </li> -->
+            </ul>
+        </div>
+        <form class="add_work-todo__wrap" id="forma">
+            <div class="add-title__wrap">
+                <h1>Добавьте новые дела</h1>
+                <p>Введите название своего дела и выберите степень важности</p>
+            </div>
+            <div class="add_work__wrap">
+                <span>Название дела</span>
+                <input type="text" placeholder="Введите название своего дела и выберите степень важности"
+                    id="taskInput">
+            </div>
+            <div class="importance_work__wrap">
+                <span>Выберите важность</span>
+                <div class="importances__wrap">
+                    <div id="importanceRed" class="importance" data-color="red"></div>
+                    <div id="importanceYellow" class="importance" data-color="yellow"></div>
+                    <div id="importanceGreen" class="importance" data-color="green"></div>
+                </div>
+            </div>
+            <button type="submit" id="addWork">Добавить дело</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
