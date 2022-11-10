@@ -3,26 +3,57 @@ const form = document.querySelector('#forma')
 const taskInput = document.querySelector('#taskInput')
 const tasksList = document.querySelector('#spisok')
 const emptyList = document.querySelector('.work-start__wrap')
+let color = ''
 
-
+//Вызов функций
 form.addEventListener('submit', addTask)
 tasksList.addEventListener('click', deleteTask)
 tasksList.addEventListener('click', doneTask)
-let color = ''
 form.addEventListener('click', getColor)
 
+//Создаем массив для данных
+let tasks = []
+
+
+//Достаем данные из localStorage
+if(localStorage.getItem('tasks')){
+    tasks = JSON.parse(localStorage.getItem('tasks'))
+
+    //Рендерим задачи
+    tasks.forEach(task => renderTask(task))
+}
+
+
+checkList()
 
 //Добавление дела
 function addTask(event) {
     //Отменяем перезагрузку при отправке формы
     event.preventDefault()
 
-    let taskText = `
-        <li class="work__wrap">
-            <div class="name-work__wrap">
+    //Текст задачи из инпута
+    let taskText = taskInput.value
+
+    //Описываем задачу в виде объекта
+    const newTask = {
+        id: Date.now(),
+        text: taskText,
+        status: false,
+        color: color
+    }
+
+    //Добавляем задачу в массив с задачами tasks
+    tasks.push(newTask)
+
+    //Формируем cssClass
+    const cssClass = newTask.done ? "task-title--done" : "false";
+
+    let taskHTML = `
+        <li id = '${newTask.id}' class="work__wrap">
+            <div class="name-work__wrap" id='${newTask.id}'>
                 <input type="checkbox" id="checkWork" data-action="checked">
-                <div class="importance-work ${color}"></div>
-                <h2>${taskInput.value}</h2>
+                <div class="importance-work ${newTask.color}"></div>
+                <h2 class="${cssClass}">${newTask.text}</h2>
             </div>
             <div class="delete-work__wrap">
                 <button id="deleteWork" data-action="delete">
@@ -32,7 +63,7 @@ function addTask(event) {
         </li>
     `
     //Добавляем разметку в HTML
-    tasksList.insertAdjacentHTML('beforeend', taskText)
+    tasksList.insertAdjacentHTML('beforeend', taskHTML)
 
     //Очищаем инпут и задаем фокус
     taskInput.value = ''
@@ -41,29 +72,47 @@ function addTask(event) {
     //Очищаем значение color
     color = ''
 
-    //Убираем первый элемент в списке
-    if (tasksList.children.length > 1) {
-        emptyList.classList.add('none')
-    }
+    checkList()
+    saveLocal()
 }
 //Удаление дела
 function deleteTask(event) {
     if (event.target.dataset.action === 'delete') {
         //Ищем родителя
         const parenNode = event.target.closest('.work__wrap')
+
+        //Определяем ID задачи
+        const id = parenNode.id
+
+        //Находим индекс методом findIndex и удаляем его
+        const index = tasks.findIndex(task => tasks.id == id)
+
+        //Удаляем задачу из массива методом splice
+        tasks.splice(index, 1)
+
+        //Удаляем задачу из разметки
         parenNode.remove()
     }
 
-    if (tasksList.children.length == 1) {
-        emptyList.classList.remove('none')
-    }
+    checkList()
+    saveLocal()
 }
 //Выполнение дела
 function doneTask(event) {
-    if (event.target.dataset.action === 'checked') {
-        const parenNode = event.target.closest('.name-work__wrap')
-        parenNode.classList.toggle('done')
-    }
+    if (event.target.dataset.action !== 'checked') return;
+    const parenNode = event.target.closest('.name-work__wrap')
+    parenNode.classList.toggle('done')
+    
+
+    //Определяем ID дела
+    const id = parenNode.id
+
+    //
+    const task = tasks.find((task) => task.id == id)
+
+    //Меняем статус выполненного дела на true
+    task.status = !task.status
+    saveLocal()
 }
 //Проверка и получение цвета
 function getColor(event) {
@@ -72,83 +121,46 @@ function getColor(event) {
         return color
     }
 }
+//Проверка на пустой список
+function checkList(){
+    if(tasks.length == 0){
+        const workStartHTML = `
+        <li class="work-start__wrap">
+            <div class="title-work__wrap">
+                <h1>Список дел пуст :(</h1>
+                <p>Добавьте новые</p>
+            </div>
+            <img src="./image/clear_work.svg" alt="img">
+        </li>
+        `
+        tasksList.insertAdjacentHTML('afterbegin', workStartHTML)
+    }
 
-
-
-
-
-
-
-// function sposobTwo(){
-
-//     //Добавление задач в список дел
-// const form = document.querySelector('#form')
-// const taskInput = document.querySelector('#taskInput')
-// const tasksList = document.querySelector('#spisok')
-// const emptyList = document.querySelector('#emptyList')
-
-// //Добавление задачи
-// form.addEventListener('submit', addTask)
-
-// //Удаление задачи
-// tasksList.addEventListener('click' , deleteTask)
-
-// //Выполненные задачи
-// tasksList.addEventListener('click', doneTask)
-
-// function addTask(event){ 
-//     //Отменяем отправку формы 
-//     event.preventDefault()
-
-//     //Достаем текст задачи из поля ввода
-//     const taskText = taskInput.value
-
-//     //Формируем разметку для новой задачи
-//     const taskHTML = `
-//         <li class='list-group-item'>
-//             <h3 id="todo">${taskText}</h3>
-//             <div class="buttons_setting">
-//                 <div data-action='done' id="trueButton">+</div>
-//                 <div data-action='delete' id="falseButton">-</div>
-//             </div>
-//         </li>
-//     `
-
-//     //Добавление задачи на страницу
-//     tasksList.insertAdjacentHTML('beforeend', taskHTML)
-
-//     //Очищаем инпут и задаем фокус
-//     taskInput.value = ''
-//     taskInput.focus()
-
-//     //Удаляем первый элемент
-//     if(tasksList.children.length > 1){
-//         emptyList.classList.add('none')
-//     }
-// }
-
-// function deleteTask(event){
-//     //Делаем проверку на поиск кнопки
-//     if(event.target.dataset.action === 'delete'){
-//         const parenNode = event.target.closest('.list-group-item') // Ищет среди родителей(снаружи, в который вложен элемент)
-//         parenNode.remove()
-//     }
-
-//     //Показываем первый элемент
-//     if(tasksList.children.length == 1){
-//         emptyList.classList.remove('none')
-//     }
-// }
-
-// function doneTask(event){
-//     if(event.target.dataset.action === 'done'){
-//         const parenNode = event.target.closest('li')
-//         //Выполняем поиск по родителям
-//         const taskTitle = parenNode.querySelector('#todo')
-//         taskTitle.classList.toggle('doneTask')
-//     }
-// }
-// }
-
-
-// //Добавление задач в список дел
+    if(tasks.length > 0){
+        const workStartElement = document.querySelector('.work-start__wrap')
+        workStartElement ? workStartElement.remove() : null
+    }
+}
+//Сохранение в localStorage разметки
+function saveLocal(){
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+}
+//Рендеринг разметки из хранилища
+function renderTask(task){
+    const cssClass = task.done ? "task-title--done" : "false";
+    let taskHTML = `
+        <li id = '${task.id}' class="work__wrap">
+            <div class="name-work__wrap" id='${task.id}'>
+                <input type="checkbox" id="checkWork" data-action="checked">
+                <div class="importance-work ${task.color}"></div>
+                <h2 class="${cssClass}">${task.text}</h2>
+            </div>
+            <div class="delete-work__wrap">
+                <button id="deleteWork" data-action="delete">
+                    <span data-action="delete">Удалить</span>
+                </button>
+            </div>
+        </li>
+    `
+    tasksList.insertAdjacentHTML('beforeend', taskHTML)
+}
